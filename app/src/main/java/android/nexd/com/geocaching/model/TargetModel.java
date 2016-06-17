@@ -17,9 +17,22 @@ public class TargetModel implements Parcelable {
 
     private boolean isApproach;
 
+    private  String name;
 
     private String answer;
 
+
+
+
+
+    public TargetModel(String macId, double distance, boolean isFinish, boolean isApproach, String name, String answer) {
+        this.macId = macId;
+        this.distance = distance;
+        this.isFinish = isFinish;
+        this.isApproach = isApproach;
+        this.name = name;
+        this.answer = answer;
+    }
 
     public TargetModel(String macId, double distance, boolean isFinish, boolean isApproach) {
         this.macId = macId;
@@ -28,12 +41,12 @@ public class TargetModel implements Parcelable {
         this.isApproach = isApproach;
     }
 
-    public TargetModel(String macId, double distance, boolean isFinish, boolean isApproach, String answer) {
+    public TargetModel(String name, String macId, double distance, boolean isFinish, boolean isApproach) {
         this.macId = macId;
         this.distance = distance;
         this.isFinish = isFinish;
         this.isApproach = isApproach;
-        this.answer = answer;
+        this.name = name;
     }
 
     protected TargetModel(Parcel in) {
@@ -69,7 +82,11 @@ public class TargetModel implements Parcelable {
     }
 
     public void setDistance(double distance) {
-        this.distance = (distance + this.distance) / 2;
+        if (this.distance == 100) {
+            this.distance = distance;
+        }else {
+            this.distance = (distance + this.distance) / 2;
+        }
     }
 
     public boolean isFinish() {
@@ -108,5 +125,13 @@ public class TargetModel implements Parcelable {
         dest.writeByte((byte) (isFinish ? 1 : 0));
         dest.writeByte((byte) (isApproach ? 1 : 0));
         dest.writeString(answer);
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

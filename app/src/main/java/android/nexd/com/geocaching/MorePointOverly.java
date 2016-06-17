@@ -68,7 +68,25 @@ public class MorePointOverly extends SVGMapBaseOverlay {
         if (this.isVisible && this.positions != null) {
             for (PointF pointF : positions) {
                 float[] point = new float[]{pointF.x, pointF.y};
-                Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), res);
+
+                BitmapFactory.Options op = new BitmapFactory.Options();
+                op.inJustDecodeBounds = true;
+
+                Bitmap oldBitmap = BitmapFactory.decodeResource(context.getResources(), res);
+
+                // 设置缩小比例, 先计算宽高比
+                int wRatio = (int) Math.ceil(op.outWidth / 76f);
+                int hRatio = (int) Math.ceil(op.outHeight / 76f);
+
+                if (wRatio > 1 && hRatio > 1) {
+                    if (wRatio > hRatio) {
+                        op.inSampleSize = wRatio;
+                    } else {
+                        op.inSampleSize = hRatio;
+                    }
+                }
+
+                Bitmap bitmap = Bitmap.createScaledBitmap(oldBitmap, 76, 76, true);/*BitmapFactory.decodeResource(context.getResources(), res);*/
                 int width = bitmap.getWidth();
                 int height = bitmap.getHeight();
                 int newWidth = width / 2;

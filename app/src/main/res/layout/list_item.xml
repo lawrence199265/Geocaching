@@ -6,30 +6,31 @@
     android:paddingLeft="16dp"
     android:paddingRight="16dp">
 
-
     <TextView
         android:id="@+id/mac_id"
         android:layout_width="0dp"
-        android:layout_weight="1"
         android:layout_height="wrap_content"
-        android:text="Mac ID:"
+        android:layout_weight="1"
         android:gravity="left"
+        android:text="Mac ID:"
         android:textSize="15sp" />
 
     <TextView
         android:id="@+id/distance"
         android:layout_width="0dp"
-        android:layout_weight="1"
         android:layout_height="wrap_content"
-        android:text="dk:23:34:df:34:df"
+        android:layout_weight="1"
         android:gravity="right"
+        android:text="dk:23:34:df:34:df"
         android:textSize="20sp" />
 
     <Button
+        android:layout_marginLeft="5dp"
         android:id="@+id/scan_qr_code"
         android:layout_width="0dp"
-        android:layout_weight="0.7"
         android:layout_height="wrap_content"
+        android:background="#22000000"
+        android:layout_weight="0.7"
         android:gravity="center"
         android:text="扫一扫" />
 </LinearLayout>

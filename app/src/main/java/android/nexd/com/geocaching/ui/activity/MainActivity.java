@@ -36,7 +36,7 @@ import java.util.List;
 import cn.nexd.map.rendering.SVGMapViewListener;
 import cn.nexd.map.rendering.core.componet.SVGMapView;
 
-public class MainActivity extends BaseActivity<MainPresenter> implements IMainView, View.OnClickListener , SVGMapViewListener{
+public class MainActivity extends BaseActivity<MainPresenter> implements IMainView, View.OnClickListener, SVGMapViewListener {
 
     private static final int SCANNIN_GREQUEST_CODE = 0x1002;
 
@@ -110,26 +110,10 @@ public class MainActivity extends BaseActivity<MainPresenter> implements IMainVi
         adapter = new BeaconAdapter();
         beaconList.setAdapter(adapter);
 
-        beacons.add(new TargetModel("0117C596CD19", 100D, true, true, "0117C596CD19\n" +
-                "春苗不觉晓，\n" +
-                "处处闻啼鸟；\n" +
-                "夜来风雨声，\n" +
-                "花落知多少。"));
-        beacons.add(new TargetModel("0117C596275D", 100D, true, true, "0117C596CD19\n" +
-                "春苗不觉晓，\n" +
-                "处处闻啼鸟；\n" +
-                "夜来风雨声，\n" +
-                "花落知多少。"));
-        beacons.add(new TargetModel("0117C596510D", 100D, true, true, "0117C596CD19\n" +
-                "春苗不觉晓，\n" +
-                "处处闻啼鸟；\n" +
-                "夜来风雨声，\n" +
-                "花落知多少。"));
-        beacons.add(new TargetModel("0117C596A7CA", 100D, true, true, "0117C596CD19\n" +
-                "春苗不觉晓，\n" +
-                "处处闻啼鸟；\n" +
-                "夜来风雨声，\n" +
-                "花落知多少。"));
+        beacons.add(new TargetModel("线索一", "0117C596150D", 100D, false, true));
+        beacons.add(new TargetModel("线索二", "0117C5969B91", 100D, false, true));
+        beacons.add(new TargetModel("线索三", "0117C5963E07", 100D, false, true));
+        beacons.add(new TargetModel("线索四", "0117C596A7CA", 100D, false, true));
 
         presenter.getTaskList(beacons);
 
@@ -336,7 +320,7 @@ public class MainActivity extends BaseActivity<MainPresenter> implements IMainVi
                 holder = (ViewHolder) convertView.getTag();
             }
             TargetModel beacon = getItem(position);
-            holder.macId.setText(beacon.getMacId());
+            holder.macId.setText(beacon.getName());
             if (!beacon.isFinish()) {
                 if (beacon.isApproach()) {
                     holder.distance.setText((df.format(beacon.getDistance()) + getString(R.string.distance)));
