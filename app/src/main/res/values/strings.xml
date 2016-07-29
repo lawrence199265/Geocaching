@@ -13,4 +13,8 @@
     <string name="end">结束</string>
     <string name="change">查看地图</string>
     <string name="change_task">查看任务</string>
+
+    <string name="title_activity_loading">LoadingActivity</string>
+    <string name="dummy_button">开始寻宝</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
 </resources>

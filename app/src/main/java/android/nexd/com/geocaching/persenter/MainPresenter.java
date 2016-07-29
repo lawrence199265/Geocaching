@@ -119,10 +119,6 @@ public class MainPresenter extends BasePresenter<IMainView> {
         }
     }
 
-    public void scanQRCode() {
-
-    }
-
     public void startLooking() {
         try {
             sensoroManager.startService();
@@ -165,7 +161,7 @@ public class MainPresenter extends BasePresenter<IMainView> {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                boolean isSuccess = QRCodeUtil.createQRImage(content.toString(), 1000,1000, null, filePath);
+                boolean isSuccess = QRCodeUtil.createQRImage(content.toString(), 1000, 1000, null, filePath);
                 if (isSuccess) {
                     ((Activity) context).runOnUiThread(new Runnable() {
                         @Override

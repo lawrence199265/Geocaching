@@ -110,10 +110,10 @@ public class MainActivity extends BaseActivity<MainPresenter> implements IMainVi
         adapter = new BeaconAdapter();
         beaconList.setAdapter(adapter);
 
-        beacons.add(new TargetModel("线索一", "0117C596150D", 100D, false, true));
-        beacons.add(new TargetModel("线索二", "0117C5969B91", 100D, false, true));
-        beacons.add(new TargetModel("线索三", "0117C5963E07", 100D, false, true));
-        beacons.add(new TargetModel("线索四", "0117C596A7CA", 100D, false, true));
+        beacons.add(new TargetModel("线索一", "0117C596A701", 100D, false, true/*, "0117C596150D\n您已获得线索一\n\n"*/));
+        beacons.add(new TargetModel("线索二", "0117C596E2EB", 100D, false, true/*, "0117C5969B91\n您已获得线索二\n\n"*/));
+        beacons.add(new TargetModel("线索三", "0117C596F6B3", 100D, false, true/*, "0117C5963E07\n您已获得线索三\n\n"*/));
+        beacons.add(new TargetModel("线索四", "0117C5964883", 100D, false, true/*, "0117C596A7CA\n您已获得线索四\n\n"*/));
 
         presenter.getTaskList(beacons);
 
@@ -202,6 +202,30 @@ public class MainActivity extends BaseActivity<MainPresenter> implements IMainVi
     }
 
 
+    @Override
+    protected void onResume() {
+//        presenter.startLooking();
+        super.onResume();
+    }
+
+    @Override
+    protected void onStop() {
+        presenter.stopLooking();
+        super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        presenter.stopLooking();
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onPause() {
+        presenter.stopLooking();
+        super.onPause();
+    }
+
     private void scanQRCode(TargetModel targetModel) {
         if (!isStarted) return;
         this.targetModel = targetModel;
@@ -243,7 +267,7 @@ public class MainActivity extends BaseActivity<MainPresenter> implements IMainVi
                     }
                 } else {
                     isStarted = true;
-                    startEnd.setText("Looking forward ...");
+                    startEnd.setText("寻宝中...");
                     presenter.startLooking();
                 }
         }
@@ -254,7 +278,7 @@ public class MainActivity extends BaseActivity<MainPresenter> implements IMainVi
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                showToast("加载完成");
+//                showToast("加载完成");
                 if (morePointOverly == null) {
                     morePointOverly = new MorePointOverly(MainActivity.this);
                     morePointOverly.setRes(R.drawable.box);

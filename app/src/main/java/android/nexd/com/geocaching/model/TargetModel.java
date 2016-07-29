@@ -17,15 +17,12 @@ public class TargetModel implements Parcelable {
 
     private boolean isApproach;
 
-    private  String name;
+    private String name;
 
     private String answer;
 
 
-
-
-
-    public TargetModel(String macId, double distance, boolean isFinish, boolean isApproach, String name, String answer) {
+    public TargetModel(String name, String macId, double distance, boolean isFinish, boolean isApproach, String answer) {
         this.macId = macId;
         this.distance = distance;
         this.isFinish = isFinish;
@@ -84,7 +81,7 @@ public class TargetModel implements Parcelable {
     public void setDistance(double distance) {
         if (this.distance == 100) {
             this.distance = distance;
-        }else {
+        } else {
             this.distance = (distance + this.distance) / 2;
         }
     }
