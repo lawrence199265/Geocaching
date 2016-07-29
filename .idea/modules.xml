@@ -3,9 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/CheckIn/CheckIn.iml" filepath="$PROJECT_DIR$/CheckIn/CheckIn.iml" />
-      <module fileurl="file://$PROJECT_DIR$/Geocach/Geocach.iml" filepath="$PROJECT_DIR$/Geocach/Geocach.iml" />
       <module fileurl="file://$PROJECT_DIR$/Geocaching.iml" filepath="$PROJECT_DIR$/Geocaching.iml" />
-      <module fileurl="file://$PROJECT_DIR$/lib/lib.iml" filepath="$PROJECT_DIR$/lib/lib.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/watch/watch.iml" filepath="$PROJECT_DIR$/watch/watch.iml" />
     </modules>
   </component>

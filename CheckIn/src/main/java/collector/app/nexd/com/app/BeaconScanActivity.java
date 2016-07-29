@@ -8,7 +8,6 @@ import java.util.List;
 import cn.nexd.sdk.collector.NexdCollectorAgent;
 import cn.nexd.sdk.collector.NexdCollectorConfiguration;
 import cn.nexd.sdk.collector.core.CollectorResultListener;
-import collector.app.nexd.com.app.model.TargetModel;
 
 public class BeaconScanActivity extends AppCompatActivity  implements CollectorResultListener{
     private NexdCollectorConfiguration.CollectionMode collectorMode;

@@ -1,12 +1,8 @@
 package collector.app.nexd.com.app;
 
 
-import com.sensoro.cloud.SensoroManager;
-
-import android.os.AsyncTask;
-import android.os.Parcelable;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,29 +10,31 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.sensoro.beacon.kit.Beacon;
 import com.sensoro.beacon.kit.BeaconManagerListener;
+import com.sensoro.cloud.SensoroManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Filter;
 
-import collector.app.nexd.com.app.model.TargetModel;
+import cn.nexd.sdk.collector.NexdCollectorAgent;
+import cn.nexd.sdk.collector.NexdCollectorConfiguration;
+import cn.nexd.sdk.collector.NexdCollectorResult;
+import cn.nexd.sdk.collector.NexdCollectorResultListener;
+import collector.app.nexd.com.app.model.StaffModel;
 
 public class MainActivity extends AppCompatActivity implements BeaconManagerListener {
     private static final String TAG = "MainActivity";
     private SensoroManager sensorManager;
     private Map<String, String> whiteList = new HashMap<>();
-    private Map<String, TargetModel> resultBeacon = new HashMap<>();
+    private Map<String, StaffModel> resultBeacon = new HashMap<>();
     private ProgressBar runMan;
     private TextView tvShowInfo;
     private FilterUtil filterUtil;
@@ -50,14 +48,97 @@ public class MainActivity extends AppCompatActivity implements BeaconManagerList
     private EditText etInputSecond;
     private int finalSecond = 60;
 
+
+    // ================================华丽的分割线================================
+    private InnerStaffAdapter innerStaffAdapter;
+    private OuterStaffAdapter outerStaffAdapter;
+    private NexdCollectorAgent collectorAgent;
+    private NexdCollectorConfiguration collectorConfiguration;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        init();
+        // 初始化过滤器
+        filterUtil = new FilterUtil(newList/*, exitList*/);
         initView();
-        bindData();
+        // 初始化列表业务
+        innerStaffAdapter = new InnerStaffAdapter(this, filterUtil.innerLists);
+        outerStaffAdapter = new OuterStaffAdapter(this, filterUtil.outerLists);
+        lvNew.setAdapter(innerStaffAdapter);
+        lvExit.setAdapter(outerStaffAdapter);
+        // 初始化采集业务
+        collectorAgent = NexdCollectorAgent.getCollectorAgent(this);
+        NexdCollectorConfiguration.Buidler buidler = new NexdCollectorConfiguration.Buidler();
+        buidler.setAppkey("").setBeaconCollectorDelay(1000);
+        buidler.setBeaconCollectorRate(1000);
+        buidler.setBeaconCollectorEnable(true);
+        buidler.setDebugMode(true);
+        buidler.setWifiCollectorEnable(false);
+        buidler.setBeaconResultCacheTime(3000);
+
+        // 开始采集,  采集中的临时集合尽量不要提取处理啊,有可能会影响业务
+        collectorAgent.startCollector(buidler.build(), new NexdCollectorResultListener() {
+            @Override
+            public void onCollectorChanged(List<NexdCollectorResult> list) {
+                if (list.get(0).getStateCode() == NexdCollectorResult.ERROR_CODE_COLLECTOR_SUCCESS) {
+                    List<StaffModel> tempModels = new ArrayList<>();
+                    for (NexdCollectorResult nexdCollectorResult : list) {
+                        // 将白名单的 Beacon 过滤出来
+                        if (FilterUtil.whiteList.containsKey(nexdCollectorResult.getSingleSourceAddress())) {
+                            Log.d(TAG, "onCollectorChanged: " + nexdCollectorResult.getSingleSourceAddress());
+                            tempModels.add(FilterUtil.whiteList.get(nexdCollectorResult.getSingleSourceAddress()));
+                        }
+                    }
+
+                    checkUpdate(tempModels);
+                }
+            }
+        });
     }
+
+
+    public void checkUpdate(List<StaffModel> tempModels) {
+        // 将扫描到的数据,添加并重置时钟到inner中
+        for (StaffModel tempModel : tempModels) {
+            if (!filterUtil.innerLists.contains(tempModel)) {
+                filterUtil.enterStaff(tempModel);
+            }
+            tempModel.setTimer();
+        }
+        List<StaffModel> tempOutStaff = new ArrayList<>();
+        // 获取,本次没有扫描到的Beacon, 对其 timer 倒计时统计
+        for (StaffModel innerList : filterUtil.innerLists) {
+            if (!tempModels.contains(innerList)) {
+                innerList.subTimer();
+            }
+            if (innerList.getTimer() == 0) {
+                tempOutStaff.add(innerList);
+            }
+        }
+        // 更新outer列表
+        updateOutStaff(tempOutStaff);
+    }
+
+    private void updateOutStaff(List<StaffModel> tempOutStaff) {
+        // 将 tempOutStaff 列表中的数据,添加到 outerList 中
+        for (StaffModel staffModel : tempOutStaff) {
+            filterUtil.exitStaff(staffModel);
+        }
+
+        // 刷新列表
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+
+                innerStaffAdapter.notifyDataSetChanged();
+                outerStaffAdapter.notifyDataSetChanged();
+            }
+        });
+    }
+
+
+    // ================================华丽的分割线===================================================
 
     private void bindData() {
         newListAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, newList);
@@ -70,7 +151,7 @@ public class MainActivity extends AppCompatActivity implements BeaconManagerList
     @Override
     protected void onStop() {
         super.onStop();
-        sensorManager.stopService();
+//        sensorManager.stopService();
     }
 
 
@@ -152,9 +233,9 @@ public class MainActivity extends AppCompatActivity implements BeaconManagerList
                         }
                     });
                 }
-                filterUtil.enterNewBeacon(FilterUtil.whiteList.get(beacon.getMacAddress()));
+//                filterUtil.enterNewBeacon(FilterUtil.whiteList.get(beacon.getMacAddress()));
                 synchronized (filterUtil.enterQueue) {
-                    filterUtil.enterQueue.add(FilterUtil.whiteList.get(beacon.getMacAddress()));
+//                    filterUtil.enterQueue.add(FilterUtil.whiteList.get(beacon.getMacAddress()));
                 }
             }
         }
@@ -194,7 +275,7 @@ public class MainActivity extends AppCompatActivity implements BeaconManagerList
             for (int i = 0; i < arrayList.size(); i++) {
                 if (FilterUtil.whiteList.containsKey(arrayList.get(i).getMacAddress())) {
                     newList.remove(FilterUtil.whiteList.get(arrayList.get(i).getMacAddress()));
-                    temp.add(FilterUtil.whiteList.get(arrayList.get(i).getMacAddress()));
+//                    temp.add(FilterUtil.whiteList.get(arrayList.get(i).getMacAddress()));
                 }
             }
 

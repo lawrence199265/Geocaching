@@ -9,8 +9,7 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/CheckIn" />
-            <option value="$PROJECT_DIR$/Geocach" />
-            <option value="$PROJECT_DIR$/lib" />
+            <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/watch" />
           </set>
         </option>
@@ -18,8 +17,7 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/CheckIn" />
-            <option value="$PROJECT_DIR$/Geocach" />
-            <option value="$PROJECT_DIR$/lib" />
+            <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/watch" />
           </set>
         </option>
