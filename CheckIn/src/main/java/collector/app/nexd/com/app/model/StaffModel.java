@@ -3,6 +3,8 @@ package collector.app.nexd.com.app.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import collector.app.nexd.com.app.MainActivity;
+
 /**
  * Created by xun on 2016/7/25.
  */
@@ -13,7 +15,7 @@ public class StaffModel implements Parcelable {
 
     private String beaconName;
 
-    private int timer = 60;
+    private int timer = MainActivity.finalSecond;
 
 
     public StaffModel(String macAddress, String beaconName) {
@@ -60,7 +62,7 @@ public class StaffModel implements Parcelable {
     }
 
     public void setTimer() {
-        this.timer = 60;
+        this.timer = MainActivity.finalSecond;
     }
 
     public void subTimer() {

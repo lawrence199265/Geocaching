@@ -46,14 +46,12 @@ public class MainActivity extends AppCompatActivity implements BeaconManagerList
     private int index = 0;
     private Button btnSubmit;
     private EditText etInputSecond;
-    private int finalSecond = 60;
+    public static volatile int finalSecond = 60;
 
 
     // ================================华丽的分割线================================
     private InnerStaffAdapter innerStaffAdapter;
     private OuterStaffAdapter outerStaffAdapter;
-    private NexdCollectorAgent collectorAgent;
-    private NexdCollectorConfiguration collectorConfiguration;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +66,7 @@ public class MainActivity extends AppCompatActivity implements BeaconManagerList
         lvNew.setAdapter(innerStaffAdapter);
         lvExit.setAdapter(outerStaffAdapter);
         // 初始化采集业务
-        collectorAgent = NexdCollectorAgent.getCollectorAgent(this);
+        NexdCollectorAgent collectorAgent = NexdCollectorAgent.getCollectorAgent(this);
         NexdCollectorConfiguration.Buidler buidler = new NexdCollectorConfiguration.Buidler();
         buidler.setAppkey("").setBeaconCollectorDelay(1000);
         buidler.setBeaconCollectorRate(1000);
@@ -81,6 +79,13 @@ public class MainActivity extends AppCompatActivity implements BeaconManagerList
         collectorAgent.startCollector(buidler.build(), new NexdCollectorResultListener() {
             @Override
             public void onCollectorChanged(List<NexdCollectorResult> list) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        runMan.setVisibility(View.VISIBLE);
+                        tvShowInfo.setText("正在查找中...");
+                    }
+                });
                 if (list.get(0).getStateCode() == NexdCollectorResult.ERROR_CODE_COLLECTOR_SUCCESS) {
                     List<StaffModel> tempModels = new ArrayList<>();
                     for (NexdCollectorResult nexdCollectorResult : list) {
@@ -130,7 +135,12 @@ public class MainActivity extends AppCompatActivity implements BeaconManagerList
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-
+                StringBuffer enterQueue = new StringBuffer();
+                for (StaffModel inner : filterUtil.innerLists) {
+                    enterQueue.append(inner.getBeaconName() + "\n");
+                }
+                runMan.setVisibility(View.GONE);
+                tvShowInfo.setText("Welcome\n" + enterQueue.toString());
                 innerStaffAdapter.notifyDataSetChanged();
                 outerStaffAdapter.notifyDataSetChanged();
             }
@@ -156,7 +166,7 @@ public class MainActivity extends AppCompatActivity implements BeaconManagerList
 
 
     private void initView() {
-        footView = LayoutInflater.from(this).inflate(R.layout.foot_layout, null);
+        footView = findViewById(R.id.foot_layout);
         runMan = (ProgressBar) footView.findViewById(R.id.main_man_progressBar);
         tvShowInfo = (TextView) footView.findViewById(R.id.tv_info);
         lvNew = (ListView) findViewById(R.id.lv_new);
@@ -169,17 +179,19 @@ public class MainActivity extends AppCompatActivity implements BeaconManagerList
                 if (TextUtils.isEmpty(etInputSecond.getText().toString())) {
                     Toast.makeText(MainActivity.this, "您输入的秒数为空", Toast.LENGTH_SHORT).show();
                 }
+
+
                 finalSecond = Integer.valueOf(etInputSecond.getText().toString());
                 index = 0;
                 Toast.makeText(MainActivity.this, "提交成功，您当前的延时为" + finalSecond + "秒", Toast.LENGTH_SHORT).show();
             }
         });
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                lvNew.addFooterView(footView);
-            }
-        });
+//        runOnUiThread(new Runnable() {
+//            @Override
+//            public void run() {
+//                lvNew.addFooterView(footView);
+//            }
+//        });
 
     }
 
