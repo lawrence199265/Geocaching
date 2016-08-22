@@ -47,6 +47,11 @@
         <!-- android:configChanges="orientation|keyboardHidden|screenSize" -->
         <!-- android:label="@string/title_activity_loading" -->
         <!-- android:theme="@style/FullscreenTheme"/> -->
+        <activity
+            android:name=".ui.activity.SeekPresentActivity"
+            android:label="@string/title_activity_seek_present">
+
+        </activity>
     </application>
 
 </manifest>

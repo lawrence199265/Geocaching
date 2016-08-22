@@ -1,8 +1,8 @@
 package android.nexd.com.geocaching.ui.activity;
 
-import android.nexd.com.geocaching.persenter.BasePresenter;
+import android.nexd.com.geocaching.presenter.BasePresenter;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 
 import butterknife.ButterKnife;
@@ -11,7 +11,7 @@ import butterknife.ButterKnife;
 /**
  * Created by wangxu on 16/4/19.
  */
-public abstract class BaseActivity<T extends BasePresenter> extends AppCompatActivity {
+public abstract class BaseActivity<T extends BasePresenter> extends ActionBarActivity {
 
     protected String TAG = this.getClass().getSimpleName();
 

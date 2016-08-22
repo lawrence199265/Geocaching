@@ -2,7 +2,7 @@ package android.nexd.com.geocaching.ui.activity;
 
 import android.content.Intent;
 import android.nexd.com.geocaching.R;
-import android.nexd.com.geocaching.persenter.InputTypePresenter;
+import android.nexd.com.geocaching.presenter.InputTypePresenter;
 import android.nexd.com.geocaching.ui.iView.IInputTypeView;
 import android.os.Bundle;
 import android.text.TextUtils;
