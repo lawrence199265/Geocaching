@@ -13,7 +13,10 @@ import android.widget.TextView;
 import com.tencent.bugly.crashreport.CrashReport;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -37,12 +40,14 @@ public class BeaconScannerActivity extends Activity {
     private TextView _30Seconds;
     private TextView _60Seconds;
 
+    private Map<String, BeaconScanResult> scanResultMap = new HashMap<>();
     private final List<Integer> _30SecondsLists = new ArrayList<>();
     private final List<Integer> _60SecondsLists = new ArrayList<>();
 
+    List<BeaconScanResult> adapterResult = new ArrayList<>();
     NexdCollectorAgent collectorAgent;
-    List<NexdCollectorResult> results;
-    List<NexdCollectorResult> result = new ArrayList<>();
+    //    List<NexdCollectorResult> results;
+//    List<NexdCollectorResult> result = new ArrayList<>();
     int index = 0;
 
     private boolean isContain = false;
@@ -76,12 +81,19 @@ public class BeaconScannerActivity extends Activity {
             public void onCollectorChanged(final List<NexdCollectorResult> list) {
                 if (list.get(0).getStateCode() == NexdCollectorResult.ERROR_CODE_COLLECTOR_SUCCESS) {
                     Log.d(TAG, "onCollectorChanged: " + list.size());
-                    for (NexdCollectorResult nexdCollectorResult : list) {
-                        if (whiteLists.get(0).equals(nexdCollectorResult.getSingleSourceAddress())) {
-                            result.clear();
-                            result.add(nexdCollectorResult);
 
-                            isContain = true;
+
+                    for (String whiteList : whiteLists) {
+                        for (NexdCollectorResult nexdCollectorResult : list) {
+
+                            if (whiteList.equals(nexdCollectorResult.getSingleSourceAddress())) {
+                                if (scanResultMap.containsKey(whiteList)) {
+                                    scanResultMap.get(whiteList).setTime(new Date().toString());
+                                } else {
+                                    scanResultMap.put(whiteList, new BeaconScanResult(whiteList, nexdCollectorResult.getSingleSourceName(), nexdCollectorResult.getSingleSourceStrength(), new Date().toString()));
+                                }
+                                isContain = true;
+                            }
                         }
                     }
 
@@ -145,10 +157,15 @@ public class BeaconScannerActivity extends Activity {
                     }
 
 
+                    for (Map.Entry<String, BeaconScanResult> stringBeaconScanResultEntry : scanResultMap.entrySet()) {
+                        adapterResult.add(stringBeaconScanResultEntry.getValue());
+                    }
+
+
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            adapter.setResults(result);
+                            adapter.setResults(adapterResult);
 
                         }
                     });
@@ -189,7 +206,7 @@ public class BeaconScannerActivity extends Activity {
 
 
     class BeaconAdapter extends BaseAdapter {
-        List<NexdCollectorResult> results = new ArrayList<>();
+        List<BeaconScanResult> results = new ArrayList<>();
 
         public void setResults(List results) {
             this.results.clear();
@@ -204,7 +221,7 @@ public class BeaconScannerActivity extends Activity {
         }
 
         @Override
-        public NexdCollectorResult getItem(int position) {
+        public BeaconScanResult getItem(int position) {
             return results.get(position);
         }
 
@@ -222,14 +239,16 @@ public class BeaconScannerActivity extends Activity {
                 viewHolder.address = (TextView) convertView.findViewById(R.id.address);
                 viewHolder.name = (TextView) convertView.findViewById(R.id.name);
                 viewHolder.rssi = (TextView) convertView.findViewById(R.id.rssi);
+                viewHolder.time = (TextView) convertView.findViewById(R.id.time);
                 convertView.setTag(viewHolder);
             } else {
                 viewHolder = (ViewHolder) convertView.getTag();
             }
 
-            viewHolder.address.setText(getItem(position).getSingleSourceAddress());
-            viewHolder.name.setText(getItem(position).getSingleSourceName());
-            viewHolder.rssi.setText(String.valueOf(getItem(position).getSingleSourceStrength()));
+            viewHolder.address.setText(getItem(position).getAddress());
+            viewHolder.name.setText(getItem(position).getName());
+            viewHolder.rssi.setText(String.valueOf(getItem(position).getLevel()));
+            viewHolder.time.setText(getItem(position).getTime());
             return convertView;
         }
 
@@ -238,6 +257,7 @@ public class BeaconScannerActivity extends Activity {
             TextView address;
             TextView name;
             TextView rssi;
+            TextView time;
         }
     }
 }
